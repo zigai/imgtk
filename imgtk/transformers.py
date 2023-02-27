@@ -24,10 +24,11 @@ class Crop(Transformer):
         self.box = (x1, y1, x2, y2)
 
     def process(self, img: ImageItem) -> PipelineItem:
-        img.data = img.data.crop(self.box)
+        img._data = img.data.crop(self.box)
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         p1, p2 = val.split(SEP)
         x1, y1 = p1.split(",")
         x2, y2 = p2.split(",")
@@ -53,10 +54,11 @@ class Convert(Transformer):
         self.mode = mode
 
     def process(self, img: ImageItem) -> PipelineItem:
-        img.data = img.data.convert(self.mode)
+        img._data = img.data.convert(self.mode)
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         return cls(val)
 
 
@@ -89,10 +91,11 @@ class Resize(Transformer):
                 box = (w, h)
             case _:
                 raise ValueError((self.width, self.height))
-        img.data = img.data.resize(size=box)
+        img._data = img.data.resize(size=box)
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         args = [int(i) for i in val.split(SEP) if i != ""]
         match args:
             case ["", ""]:
@@ -121,10 +124,10 @@ class Save(Transformer):
         filename = fs.basename(img.path)
         filepath = fs.joinpath(self.directory, filename)
         img.data.save(filepath)
-        img.data.transpose()
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         return cls(val)
 
 
@@ -141,9 +144,10 @@ class Move(Transformer):
     def process(self, img: ImageItem) -> PipelineItem:
         img_file = fs.File(img.path).move_to(self.directory)
         img.path = img_file.path
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         return cls(val)
 
 
@@ -180,10 +184,11 @@ class Filter(Transformer):
         self.filter = self.filters[name]
 
     def process(self, img: ImageItem) -> PipelineItem:
-        img.data = img.data.filter(self.filter)
+        img._data = img.data.filter(self.filter)
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         return cls(val)
 
 
@@ -195,7 +200,8 @@ class Rotate(Transformer):
         self.angle = angle
 
     def process(self, img: ImageItem) -> PipelineItem:
-        img.data = img.data.rotate(self.angle, expand=True)
+        img._data = img.data.rotate(self.angle, expand=True)
+        return img
 
 
 class Scale(Transformer):
@@ -207,10 +213,11 @@ class Scale(Transformer):
         self.y = y
 
     def process(self, img: ImageItem) -> PipelineItem:
-        img.data = img.data.resize((int(img.data.width * self.x), int(img.data.height * self.y)))
+        img._data = img.data.resize((int(img.data.width * self.x), int(img.data.height * self.y)))
+        return img
 
     @classmethod
-    def parse(cls, val: str) -> None:
+    def parse(cls, val: str):
         args = [int(i) for i in val.split(SEP) if i != ""]
         match args:
             case ["", ""]:
