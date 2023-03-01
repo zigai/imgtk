@@ -1,6 +1,5 @@
 import os
-import re
-from typing import Any, Callable
+from typing import Callable
 
 from PIL import Image
 from pypipeline.pipeline_item import PipelineItem
@@ -11,11 +10,11 @@ class ImageItem(PipelineItem):
         super().__init__()
         self.path = path
         assert os.path.exists(self.path), path
-        self._data: Image.Image = None
+        self._data: Image.Image = None  # type:ignore
         self.loader = loader
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(path='{self.path}', discarded={self.discarded})"
+        return self.path
 
     def load(self):
         if self._data is None:
@@ -24,7 +23,10 @@ class ImageItem(PipelineItem):
     def unload(self):
         if self._data is not None:
             self._data.close()
-            self._data = None
+            self._data = None  # type:ignore
+
+    def on_discard(self) -> None:
+        self.unload()
 
     @property
     def data(self):

@@ -152,12 +152,11 @@ class Move(Transformer):
 
 
 class Filter(Transformer):
-    abbrev = "f"
     """
-    Apply the given filter to the image.
-    Valid filters are: blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more.
+    Apply the given filter to the image. Valid filters are: blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more.
     """
 
+    abbrev = "f"
     filters = {
         f.name.upper().replace(" ", "_"): f
         for f in [

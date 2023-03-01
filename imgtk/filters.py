@@ -8,6 +8,8 @@ from stdl.fs import readable_size_to_bytes
 
 
 class Width(IntFilter):
+    """Filter by image width"""
+
     priority = 5
     abbrev = "w"
 
@@ -16,6 +18,8 @@ class Width(IntFilter):
 
 
 class Height(IntFilter):
+    """Filters by image height"""
+
     priority = 5
     abbrev = "h"
 
@@ -24,6 +28,8 @@ class Height(IntFilter):
 
 
 class AspectRatio(FloatFilter):
+    """Filter by aspect ratio"""
+
     priority = 5
     abbrev = "ar"
 
@@ -34,6 +40,8 @@ class AspectRatio(FloatFilter):
 
 
 class Size(IntFilter):
+    """Filter by file size"""
+
     priority = 1
     abbrev = "sz"
 
@@ -68,6 +76,8 @@ class Size(IntFilter):
 
 
 class Filename(TextPatternFilter):
+    """Filter by filename using glob or regex pattern matching"""
+
     priority = 1
     abbrev = "fn"
 
@@ -77,7 +87,7 @@ class Filename(TextPatternFilter):
 
 class TextContent(TextPatternFilter):
     """
-    Uses pytesseract to extract text from image and match it against a pattern.
+    Filter by text content using OCR using glob or regex pattern matching
 
     Args:
         pattern (str) : Text pattern to match. See TextPatternFilter for more info.
