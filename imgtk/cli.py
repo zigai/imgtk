@@ -1,9 +1,10 @@
-from filters import FILTERS_MAPPING
-from img import ImageItem
 from pypipeline import PyPipelineCLI
 from pypipeline.pipeline_action import get_parsable_actions
 from stdl.fs import IMAGE_EXT, get_files_in, os
-from transformers import TRANSFORMERS_MAPPING
+
+from imgtk.filters import FILTERS_MAPPING
+from imgtk.img import ImageItem
+from imgtk.transformers import TRANSFORMERS_MAPPING
 
 
 class imgtkCLI(PyPipelineCLI):
@@ -23,12 +24,13 @@ class imgtkCLI(PyPipelineCLI):
 
 
 def cli():
-
     PARSABLE_FILTERS = get_parsable_actions(FILTERS_MAPPING.values())  # type: ignore
     PARSABLE_TRANSFORMERS = get_parsable_actions(TRANSFORMERS_MAPPING.values())  # type: ignore
-    builder = imgtkCLI(filters=PARSABLE_FILTERS, transformers=PARSABLE_TRANSFORMERS)
-    builder.run()
+    cli = imgtkCLI(filters=PARSABLE_FILTERS, transformers=PARSABLE_TRANSFORMERS)
+    cli.run()
 
 
 if __name__ == "__main__":
     cli()
+
+__all__ = ["cli"]

@@ -3,13 +3,14 @@ from typing import Callable
 
 from PIL import Image
 from pypipeline.pipeline_item import PipelineItem
+from stdl.fs import assert_paths_exist
 
 
 class ImageItem(PipelineItem):
     def __init__(self, path: str, loader: Callable = Image.open) -> None:
         super().__init__()
         self.path = path
-        assert os.path.exists(self.path), path
+        assert_paths_exist(self.path)
         self._data: Image.Image = None  # type:ignore
         self.loader = loader
 
@@ -29,6 +30,6 @@ class ImageItem(PipelineItem):
         self.unload()
 
     @property
-    def data(self):
+    def data(self) -> Image.Image:
         self.load()
         return self._data

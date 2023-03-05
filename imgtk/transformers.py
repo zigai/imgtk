@@ -1,8 +1,9 @@
-from img import ImageItem
 from PIL import ImageFilter
 from pypipeline.pipeline_item import PipelineItem
 from pypipeline.transformer import SEP, Transformer
 from stdl import fs
+
+from imgtk.img import ImageItem
 
 
 class Crop(Transformer):

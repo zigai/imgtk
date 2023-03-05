@@ -1,10 +1,11 @@
 import os
 
-from img import ImageItem
 from PIL import ImageFilter
 from pypipeline.filter import INT_MAX, SEP, Filter, FloatFilter, IntFilter, TextPatternFilter
 from pytesseract import pytesseract
 from stdl.fs import readable_size_to_bytes
+
+from imgtk.img import ImageItem
 
 
 class Width(IntFilter):
@@ -85,7 +86,7 @@ class Filename(TextPatternFilter):
         return super().process(img.path)
 
 
-class TextContent(TextPatternFilter):
+class Text(TextPatternFilter):
     """
     Filter by text content using OCR using glob or regex pattern matching
 
@@ -125,4 +126,4 @@ class TextContent(TextPatternFilter):
         return super().process(text)
 
 
-FILTERS_MAPPING = {i.__name__: i for i in [Width, Height, AspectRatio, Size, Filename, TextContent]}
+FILTERS_MAPPING = {i.__name__: i for i in [Width, Height, AspectRatio, Size, Filename, Text]}
