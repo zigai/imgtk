@@ -26,4 +26,9 @@ setup(
     ],
     packages=find_packages(),
     install_requires=REQUIREMENTS,
+    entry_points={
+        "console_scripts": [
+            "imgtk = imgtk.cli:cli",
+        ],
+    },
 )
