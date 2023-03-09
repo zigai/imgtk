@@ -19,7 +19,7 @@ class Width(IntFilter):
 
 
 class Height(IntFilter):
-    """Filters by image height"""
+    """Filter by image height"""
 
     priority = 5
     abbrev = "h"
@@ -118,11 +118,14 @@ class Text(TextPatternFilter):
         self.psm = psm
 
     def process(self, img: ImageItem) -> bool:
+        if text := img.extra_data.get("text_content", None):
+            return super().process(text)
         _img = img.data.copy()
         _img = _img.convert("L")
         _img = _img.filter(ImageFilter.MedianFilter())
         _img = _img.point(lambda x: 0 if x < 140 else 255)
         text = pytesseract.image_to_string(_img, lang=self.language, config=f"--psm {self.psm}")
+        img.extra_data["text_content"] = text
         return super().process(text)
 
 

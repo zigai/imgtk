@@ -193,6 +193,10 @@ class Filter(Transformer):
 
 
 class Rotate(Transformer):
+    """
+    Rotate the image by the given angle.
+    """
+
     abbrev = "rot"
 
     def __init__(self, angle: int) -> None:
@@ -205,6 +209,10 @@ class Rotate(Transformer):
 
 
 class Scale(Transformer):
+    """
+    Scale the image by the given factor.
+    """
+
     abbrev = "sc"
 
     def __init__(self, x: float, y: float) -> None:
@@ -219,6 +227,8 @@ class Scale(Transformer):
     @classmethod
     def parse(cls, val: str):
         args = [int(i) for i in val.split(SEP) if i != ""]
+        if len(args) == 1:
+            return cls(float(args[0]), float(args[0]))
         match args:
             case ["", ""]:
                 raise ValueError(val)
