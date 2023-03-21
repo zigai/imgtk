@@ -8,7 +8,7 @@ from imgtk.img import ImageItem
 
 class Crop(Transformer):
     """
-    Crop the image to the given box.
+    Crop the image to the given box
 
     Args:
         x1 (int): The left edge of the box.
@@ -38,7 +38,7 @@ class Crop(Transformer):
 
 class Convert(Transformer):
     """
-    Convert the image to the given mode. Valid modes are: L, RGB, CMYK, GRAYSACLE.
+    Convert the image to the given mode. Modes: [L, RGB, CMYK, GRAYSACLE]
     """
 
     abbrev = "cnv"
@@ -66,7 +66,7 @@ class Convert(Transformer):
 class Resize(Transformer):
 
     """
-    Resize the image to the given size.
+    Resize the image to the given size
 
     Args:
         width (int): The width of the image.
@@ -112,10 +112,11 @@ class Resize(Transformer):
 
 
 class Save(Transformer):
+    """
+    Save the image to the given directory
+    """
+
     abbrev = "s"
-    """
-    Save the image to the given directory.
-    """
 
     def __init__(self, directory: str) -> None:
         super().__init__()
@@ -133,10 +134,11 @@ class Save(Transformer):
 
 
 class Move(Transformer):
+    """
+    Move the image to the given directory
+    """
+
     abbrev = "mv"
-    """
-    Move the image to the given directory.
-    """
 
     def __init__(self, directory: str) -> None:
         super().__init__()
@@ -154,7 +156,7 @@ class Move(Transformer):
 
 class Filter(Transformer):
     """
-    Apply the given filter to the image. Valid filters are: blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more.
+    Apply the given filter to the image. Filters: [blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more]
     """
 
     abbrev = "f"
@@ -194,7 +196,7 @@ class Filter(Transformer):
 
 class Rotate(Transformer):
     """
-    Rotate the image by the given angle.
+    Rotate the image by the given angle
     """
 
     abbrev = "rot"
@@ -210,7 +212,7 @@ class Rotate(Transformer):
 
 class Scale(Transformer):
     """
-    Scale the image by the given factor.
+    Scale the image by the given factor
     """
 
     abbrev = "sc"
