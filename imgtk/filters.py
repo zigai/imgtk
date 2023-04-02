@@ -129,4 +129,6 @@ class Text(TextPatternFilter):
         return super().process(text)
 
 
-FILTERS_MAPPING = {i.__name__: i for i in [Width, Height, AspectRatio, Size, Filename, Text]}
+FILTERS_MAPPING: dict[str, Filter] = {
+    i.__name__: i for i in [Width, Height, AspectRatio, Size, Filename, Text]
+}

@@ -244,6 +244,6 @@ class Scale(Transformer):
                 raise ValueError(args)
 
 
-TRANSFORMERS_MAPPING = {
+TRANSFORMERS_MAPPING: dict[str, Transformer] = {
     i.__name__: i for i in [Scale, Rotate, Filter, Move, Save, Resize, Convert, Crop]
 }

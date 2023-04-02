@@ -3,7 +3,6 @@ import sys
 from glob import glob
 
 from pypipeline import PyPipelineCLI
-from pypipeline.pipeline_action import get_parsable_actions
 from stdl.fs import IMAGE_EXT, os, yield_files_in
 
 from imgtk.filters import FILTERS_MAPPING
@@ -46,10 +45,12 @@ class imgtkCLI(PyPipelineCLI):
 
 
 def cli():
-    imgtkCLI(
-        filters=get_parsable_actions(FILTERS_MAPPING.values()),  # type: ignore
-        transformers=get_parsable_actions(TRANSFORMERS_MAPPING.values()),  # type: ignore
-    )
+    actions = [
+        *[i for i in FILTERS_MAPPING.values() if i.is_parsable()],
+        *[i for i in TRANSFORMERS_MAPPING.values() if i.is_parsable()],
+    ]
+
+    imgtkCLI(actions=actions)
 
 
 if __name__ == "__main__":
