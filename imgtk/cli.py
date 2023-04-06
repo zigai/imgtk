@@ -1,19 +1,11 @@
-import select
-import sys
 from glob import glob
 
 from pypipeline import PyPipelineCLI
-from stdl.fs import IMAGE_EXT, os, yield_files_in
+from stdl.fs import IMAGE_EXT, os, read_stdin, yield_files_in
 
 from imgtk.filters import FILTERS_MAPPING
 from imgtk.img import ImageItem
 from imgtk.transformers import TRANSFORMERS_MAPPING
-
-
-def read_stdin():
-    if select.select([sys.stdin], [], [], 0.3)[0]:
-        return sys.stdin.read().strip().splitlines()
-    return []
 
 
 def collect_files(items: list[str], ext=None, stdin=True):

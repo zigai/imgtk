@@ -130,5 +130,13 @@ class Text(TextPatternFilter):
 
 
 FILTERS_MAPPING: dict[str, Filter] = {
-    i.__name__: i for i in [Width, Height, AspectRatio, Size, Filename, Text]
+    i.__name__: i
+    for i in [
+        Width,
+        Height,
+        Size,
+        AspectRatio,
+        Filename,
+        Text,
+    ]
 }
