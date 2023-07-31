@@ -5,7 +5,7 @@ from stdl.fs import IMAGE_EXT, os, read_stdin, yield_files_in
 
 from imgtk.filters import FILTERS
 from imgtk.img import ImageItem
-from imgtk.transformers import MODIFIERS
+from imgtk.modifiers import MODIFIERS
 
 
 def collect_files(items: list[str], ext=None, stdin=False):
