@@ -1,12 +1,13 @@
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
-from pypipeline.pipeline_item import PipelineItem
-from pypipeline.transformer import SEP, Transformer
+from pypipeline.constants import SEP
+from pypipeline.item import Item
+from pypipeline.modifier import Modifier
 from stdl import fs
 
 from imgtk.img import ImageItem
 
 
-class Crop(Transformer):
+class Crop(Modifier):
     """
     Crop the image to the given box
 
@@ -24,7 +25,7 @@ class Crop(Transformer):
         super().__init__()
         self.box = (x1, y1, x2, y2)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.crop(self.box)
         return img
 
@@ -36,7 +37,7 @@ class Crop(Transformer):
         return cls(int(x1), int(y1), int(x2), int(y2))
 
 
-class Convert(Transformer):
+class Convert(Modifier):
     """
     Convert the image to the given mode. Modes: [L, RGB, CMYK, GRAYSACLE]
     """
@@ -45,8 +46,9 @@ class Convert(Transformer):
 
     MODES = ["L", "RGB", "CMYK", "GRAYSACLE"]
 
-    def __init__(self, mode: str) -> None:
+    def __init__(self, mode: str, colors=256) -> None:
         super().__init__()
+        self.colors = colors
         mode = mode.upper()
         if mode == "GRAYSCALE":
             mode = "L"
@@ -54,8 +56,8 @@ class Convert(Transformer):
             raise ValueError(f"Invalid mode: {mode}. Valid modes: {', '.join(self.MODES)}")
         self.mode = mode
 
-    def process(self, img: ImageItem) -> PipelineItem:
-        img._data = img.data.convert(self.mode)
+    def process(self, img: ImageItem) -> Item:
+        img._data = img.data.convert(self.mode, colors=self.colors)
         return img
 
     @classmethod
@@ -63,7 +65,7 @@ class Convert(Transformer):
         return cls(val)
 
 
-class Resize(Transformer):
+class Resize(Modifier):
 
     """
     Resize the image to the given size
@@ -80,7 +82,7 @@ class Resize(Transformer):
         self.width = width
         self.height = height
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         match (self.width, self.height):
             case (None, None):
                 box = (img.data.width, img.data.height)
@@ -111,7 +113,7 @@ class Resize(Transformer):
                 raise ValueError(args)
 
 
-class Save(Transformer):
+class Save(Modifier):
     """
     Save the image to the given directory
     """
@@ -122,18 +124,17 @@ class Save(Transformer):
         super().__init__()
         self.directory = directory
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         filename = fs.basename(img.path)
         filepath = fs.joinpath(self.directory, filename)
         img.data.save(filepath)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(val)
+    def validate(self) -> None:
+        fs.assert_paths_exist(self.directory)
 
 
-class Move(Transformer):
+class Move(Modifier):
     """
     Move the image to the given directory
     """
@@ -141,20 +142,19 @@ class Move(Transformer):
     abbrev = "m"
 
     def __init__(self, directory: str) -> None:
-        super().__init__()
         self.directory = directory
+        super().__init__()
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img_file = fs.File(img.path).move_to(self.directory)
         img.path = img_file.path
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(val)
+    def validate(self) -> None:
+        fs.assert_paths_exist(self.directory)
 
 
-class Filter(Transformer):
+class Filter(Modifier):
     """
     Apply the given filter to the image. Filters: [blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more]
     """
@@ -185,32 +185,28 @@ class Filter(Transformer):
             )
         self.filter = self.filters[name]
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.filter(self.filter)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(val)
 
-
-class Rotate(Transformer):
+class Rotate(Modifier):
     """
     Rotate the image by the given angle
     """
 
     abbrev = "rot"
 
-    def __init__(self, angle: int) -> None:
+    def __init__(self, angle: float) -> None:
         super().__init__()
-        self.angle = angle
+        self.angle = float(angle)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.rotate(self.angle, expand=True)
         return img
 
 
-class Scale(Transformer):
+class Scale(Modifier):
     """
     Scale the image by the given factor
     """
@@ -222,7 +218,7 @@ class Scale(Transformer):
         self.x = x
         self.y = y
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.resize((int(img.data.width * self.x), int(img.data.height * self.y)))
         return img
 
@@ -244,7 +240,7 @@ class Scale(Transformer):
                 raise ValueError(args)
 
 
-class Threshold(Transformer):
+class Threshold(Modifier):
     """
     Threshold filter to binarize an image
     """
@@ -253,20 +249,16 @@ class Threshold(Transformer):
 
     def __init__(self, threshold: float) -> None:
         super().__init__()
-        self.threshold = threshold
+        self.threshold = float(threshold)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageOps.autocontrast(
             img.data.convert("L").point(lambda x: 0 if x < self.threshold else 255)
         )
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-class MedianBlur(Transformer):
+class MedianBlur(Modifier):
     """
     Median blur filter to reduce noise in an image
     """
@@ -275,18 +267,14 @@ class MedianBlur(Transformer):
 
     def __init__(self, radius: int) -> None:
         super().__init__()
-        self.radius = radius
+        self.radius = int(radius)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.filter(ImageFilter.MedianFilter(self.radius))
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(int(val))
 
-
-class GaussianBlur(Transformer):
+class GaussianBlur(Modifier):
     """
     Gaussian blur filter to reduce noise in an image
     """
@@ -295,30 +283,26 @@ class GaussianBlur(Transformer):
 
     def __init__(self, radius: float) -> None:
         super().__init__()
-        self.radius = radius
+        self.radius = float(radius)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.filter(ImageFilter.GaussianBlur(radius=self.radius))
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-class Invert(Transformer):
+class Invert(Modifier):
     """
     Invert filter to invert the colors of an image
     """
 
     abbrev = "inv"
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageOps.invert(img.data)
         return img
 
 
-class Flip(Transformer):
+class Flip(Modifier):
     """
     Flip filter to flip an image horizontally or vertically
     """
@@ -330,56 +314,44 @@ class Flip(Transformer):
         super().__init__()
         self.direction = direction.lower()
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = img.data.transpose(self.directions[self.direction])  # type: ignore
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(val)
 
-
-class Contrast(Transformer):
+class Contrast(Modifier):
     """
     Adjust the image contrast
     """
 
-    abbrev = "ctr"
+    abbrev = "cont"
 
     def __init__(self, factor: float) -> None:
         super().__init__()
-        self.factor = factor
+        self.factor = float(factor)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageEnhance.Contrast(img.data).enhance(self.factor)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-class Brightness(Transformer):
+class Brightness(Modifier):
     """
     Adjust the image brightness
     """
 
-    abbrev = "brt"
+    abbrev = "brgh"
 
     def __init__(self, factor: float) -> None:
         super().__init__()
-        self.factor = factor
+        self.factor = float(factor)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageEnhance.Brightness(img.data).enhance(self.factor)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-class Saturation(Transformer):
+class Saturation(Modifier):
     """
     Adjust the image saturation
     """
@@ -388,38 +360,30 @@ class Saturation(Transformer):
 
     def __init__(self, factor: float) -> None:
         super().__init__()
-        self.factor = factor
+        self.factor = float(factor)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageEnhance.Color(img.data).enhance(self.factor)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-class Sharpness(Transformer):
+class Sharpness(Modifier):
     """
     Adjust the sharpness of the image
     """
 
-    abbrev = "shr"
+    abbrev = "shrp"
 
     def __init__(self, factor: float) -> None:
         super().__init__()
-        self.factor = factor
+        self.factor = float(factor)
 
-    def process(self, img: ImageItem) -> PipelineItem:
+    def process(self, img: ImageItem) -> Item:
         img._data = ImageEnhance.Sharpness(img._data).enhance(self.factor)
         return img
 
-    @classmethod
-    def parse(cls, val: str):
-        return cls(float(val))
 
-
-TRANSFORMERS_MAPPING: dict[str, Transformer] = {
+MODIFIERS: dict[str, Modifier] = {
     i.__name__: i
     for i in [
         Resize,

@@ -3,14 +3,14 @@ from glob import glob
 from pypipeline import PyPipelineCLI
 from stdl.fs import IMAGE_EXT, os, read_stdin, yield_files_in
 
-from imgtk.filters import FILTERS_MAPPING
+from imgtk.filters import FILTERS
 from imgtk.img import ImageItem
-from imgtk.transformers import TRANSFORMERS_MAPPING
+from imgtk.transformers import MODIFIERS
 
 
-def collect_files(items: list[str], ext=None, stdin=True):
-    if stdin:
-        items.extend(read_stdin())
+def collect_files(items: list[str], ext=None, stdin=False):
+    # if stdin:
+    #    items.extend(read_stdin())
 
     for filepath in items:
         if os.path.isdir(filepath):
@@ -38,8 +38,8 @@ class imgtkCLI(PyPipelineCLI):
 
 def cli():
     actions = [
-        *[i for i in FILTERS_MAPPING.values() if i.is_parsable()],
-        *[i for i in TRANSFORMERS_MAPPING.values() if i.is_parsable()],
+        *[i for i in FILTERS.values() if i.is_parsable() or i.allow_autoparse],
+        *[i for i in MODIFIERS.values() if i.is_parsable() or i.allow_autoparse],
     ]
 
     imgtkCLI(actions=actions)
