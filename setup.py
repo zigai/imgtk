@@ -7,7 +7,7 @@ README = (HERE / "README.md").read_text()
 REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
-    name="imgtk",
+    name="imgtk-python",
     version="0.0.1",
     description="",
     long_description=README,
