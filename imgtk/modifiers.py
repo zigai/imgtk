@@ -7,7 +7,11 @@ from stdl import fs
 from imgtk.img import ImageItem
 
 
-class Crop(Modifier):
+class ImageModifier(Modifier):
+    description = ""
+
+
+class Crop(ImageModifier):
     """
     Crop the image to the given box
 
@@ -37,7 +41,7 @@ class Crop(Modifier):
         return cls(int(x1), int(y1), int(x2), int(y2))
 
 
-class Convert(Modifier):
+class Convert(ImageModifier):
     """
     Convert the image to the given mode. Modes: [L, RGB, CMYK, GRAYSACLE]
     """
@@ -65,7 +69,7 @@ class Convert(Modifier):
         return cls(val)
 
 
-class Resize(Modifier):
+class Resize(ImageModifier):
 
     """
     Resize the image to the given size
@@ -113,7 +117,7 @@ class Resize(Modifier):
                 raise ValueError(args)
 
 
-class Save(Modifier):
+class Save(ImageModifier):
     """
     Save the image to the given directory
     """
@@ -134,7 +138,7 @@ class Save(Modifier):
         fs.assert_paths_exist(self.directory)
 
 
-class Move(Modifier):
+class Move(ImageModifier):
     """
     Move the image to the given directory
     """
@@ -154,7 +158,7 @@ class Move(Modifier):
         fs.assert_paths_exist(self.directory)
 
 
-class Filter(Modifier):
+class Filter(ImageModifier):
     """
     Apply the given filter to the image. Filters: [blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, sharpen, smooth, smooth_more]
     """
@@ -190,7 +194,7 @@ class Filter(Modifier):
         return img
 
 
-class Rotate(Modifier):
+class Rotate(ImageModifier):
     """
     Rotate the image by the given angle
     """
@@ -206,7 +210,7 @@ class Rotate(Modifier):
         return img
 
 
-class Scale(Modifier):
+class Scale(ImageModifier):
     """
     Scale the image by the given factor
     """
@@ -240,7 +244,7 @@ class Scale(Modifier):
                 raise ValueError(args)
 
 
-class Threshold(Modifier):
+class Threshold(ImageModifier):
     """
     Threshold filter to binarize an image
     """
@@ -258,7 +262,7 @@ class Threshold(Modifier):
         return img
 
 
-class MedianBlur(Modifier):
+class MedianBlur(ImageModifier):
     """
     Median blur filter to reduce noise in an image
     """
@@ -274,7 +278,7 @@ class MedianBlur(Modifier):
         return img
 
 
-class GaussianBlur(Modifier):
+class GaussianBlur(ImageModifier):
     """
     Gaussian blur filter to reduce noise in an image
     """
@@ -290,7 +294,7 @@ class GaussianBlur(Modifier):
         return img
 
 
-class Invert(Modifier):
+class Invert(ImageModifier):
     """
     Invert filter to invert the colors of an image
     """
@@ -302,7 +306,7 @@ class Invert(Modifier):
         return img
 
 
-class Flip(Modifier):
+class Flip(ImageModifier):
     """
     Flip filter to flip an image horizontally or vertically
     """
@@ -319,7 +323,7 @@ class Flip(Modifier):
         return img
 
 
-class Contrast(Modifier):
+class Contrast(ImageModifier):
     """
     Adjust the image contrast
     """
@@ -335,7 +339,7 @@ class Contrast(Modifier):
         return img
 
 
-class Brightness(Modifier):
+class Brightness(ImageModifier):
     """
     Adjust the image brightness
     """
@@ -351,7 +355,7 @@ class Brightness(Modifier):
         return img
 
 
-class Saturation(Modifier):
+class Saturation(ImageModifier):
     """
     Adjust the image saturation
     """
@@ -367,7 +371,7 @@ class Saturation(Modifier):
         return img
 
 
-class Sharpness(Modifier):
+class Sharpness(ImageModifier):
     """
     Adjust the sharpness of the image
     """
@@ -383,8 +387,8 @@ class Sharpness(Modifier):
         return img
 
 
-MODIFIERS: dict[str, Modifier] = {
-    i.__name__: i
+MODIFIERS: dict[str, ImageModifier] = {
+    i.name: i
     for i in [
         Resize,
         Crop,
