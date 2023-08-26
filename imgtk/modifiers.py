@@ -1,3 +1,5 @@
+from typing import Type
+
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 from pypipeline.constants import SEP
 from pypipeline.item import Item
@@ -5,7 +7,7 @@ from pypipeline.modifier import Modifier
 from stdl import fs
 
 from imgtk.img import ImageItem
-from typing import Type
+
 
 class ImageModifier(Modifier):
     description = ""
@@ -391,7 +393,7 @@ class Sharpness(ImageModifier):
         return img
 
 
-MODIFIERS: dict[str, Type[ImageModifier]]] = {
+MODIFIERS: dict[str, Type[ImageModifier]] = {
     i.name: i
     for i in [
         Resize,
