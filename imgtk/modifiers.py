@@ -5,7 +5,7 @@ from pypipeline.modifier import Modifier
 from stdl import fs
 
 from imgtk.img import ImageItem
-
+from typing import Type
 
 class ImageModifier(Modifier):
     description = ""
@@ -27,7 +27,7 @@ class Crop(ImageModifier):
 
     def __init__(self, x1: int, y1: int, x2: int, y2: int) -> None:
         super().__init__()
-        self.box = (x1, y1, x2, y2)
+        self.box = (int(x1), int(y1), int(x2), int(y2))
 
     def process(self, img: ImageItem) -> Item:
         img._data = img.data.crop(self.box)
@@ -83,8 +83,8 @@ class Resize(ImageModifier):
 
     def __init__(self, width: int | None = None, height: int | None = None) -> None:
         super().__init__()
-        self.width = width
-        self.height = height
+        self.width = int(width) if width is not None else None
+        self.height = int(height) if height is not None else None
 
     def process(self, img: ImageItem) -> Item:
         match (self.width, self.height):
@@ -308,7 +308,7 @@ class Invert(ImageModifier):
 
 class Flip(ImageModifier):
     """
-    Flip filter to flip an image horizontally or vertically
+    Flip an image. Directions: [horizontal, vertical]
     """
 
     abbrev = "fl"
@@ -325,7 +325,8 @@ class Flip(ImageModifier):
 
 class Contrast(ImageModifier):
     """
-    Adjust the image contrast
+    Adjust the image contrast. Factor 1.0 always returns a copy of the original image, lower factors mean less color (brightness, contrast, etc), and higher values more.
+    There are no restrictions on this value.
     """
 
     abbrev = "cont"
@@ -341,7 +342,8 @@ class Contrast(ImageModifier):
 
 class Brightness(ImageModifier):
     """
-    Adjust the image brightness
+    Adjust the image brightness.
+    An enhancement factor of 0.0 gives a black image. A factor of 1.0 gives the original image.
     """
 
     abbrev = "brgh"
@@ -357,7 +359,8 @@ class Brightness(ImageModifier):
 
 class Saturation(ImageModifier):
     """
-    Adjust the image saturation
+    Adjust the colour balance of an image, in a manner similar to the controls on a colour TV set.
+    An enhancement factor of 0.0 gives a black and white image. A factor of 1.0 gives the original image.
     """
 
     abbrev = "sat"
@@ -373,7 +376,8 @@ class Saturation(ImageModifier):
 
 class Sharpness(ImageModifier):
     """
-    Adjust the sharpness of the image
+    Adjust the sharpness of the image.
+    An enhancement factor of 0.0 gives a blurred image, a factor of 1.0 gives the original image, and a factor of 2.0 gives a sharpened image.
     """
 
     abbrev = "shrp"
@@ -387,7 +391,7 @@ class Sharpness(ImageModifier):
         return img
 
 
-MODIFIERS: dict[str, ImageModifier] = {
+MODIFIERS: dict[str, Type[ImageModifier]]] = {
     i.name: i
     for i in [
         Resize,
