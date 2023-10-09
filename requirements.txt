@@ -1,4 +1,4 @@
-Pillow==9.4.0
+Pillow>=10.0.1
 pytesseract==0.3.10
-stdl==0.4.6
-pypeline-python==0.1.4
+stdl==0.4.8
+pypeline-python==0.1.5
