@@ -1,6 +1,6 @@
 from glob import glob
 
-from pypipeline import PyPipelineCLI
+from pypipeline.cli import PyPipelineCLI
 from stdl.fs import IMAGE_EXT, os, read_stdin, yield_files_in
 
 from imgtk.filters import FILTERS
