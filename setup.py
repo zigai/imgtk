@@ -8,7 +8,7 @@ REQUIREMENTS = (HERE / "requirements.txt").read_text()
 
 setup(
     name="imgtk-python",
-    version="0.0.8",
+    version="0.0.7",
     description="",
     long_description=README,
     long_description_content_type="text/markdown",
