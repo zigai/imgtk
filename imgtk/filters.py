@@ -1,7 +1,14 @@
 import os
 
 from PIL import ImageFilter
-from pypipeline.filter import INT_MAX, SEP, Filter, FloatFilter, IntFilter, TextPatternFilter
+from pypipeline.filter import (
+    INT_MAX,
+    SEP,
+    Filter,
+    FloatFilter,
+    IntFilter,
+    TextPatternFilter,
+)
 from pytesseract import pytesseract
 from stdl.fs import readable_size_to_bytes
 
@@ -15,7 +22,11 @@ class Width(IntFilter):
     abbrev = "w"
 
     def process(self, img: ImageItem) -> bool:
-        return img.data.width in range(self.low, self.high)
+        try:
+            value = img.data.width
+        except AttributeError:
+            return False
+        return value in range(self.low, self.high)
 
 
 class Height(IntFilter):
@@ -25,7 +36,11 @@ class Height(IntFilter):
     abbrev = "h"
 
     def process(self, img: ImageItem) -> bool:
-        return img.data.height in range(self.low, self.high)
+        try:
+            value = img.data.height
+        except AttributeError:
+            return False
+        return value in range(self.low, self.high)
 
 
 class AspectRatio(FloatFilter):
@@ -124,7 +139,9 @@ class Text(TextPatternFilter):
         _img = _img.convert("L")
         _img = _img.filter(ImageFilter.MedianFilter())
         _img = _img.point(lambda x: 0 if x < 140 else 255)
-        text = pytesseract.image_to_string(_img, lang=self.language, config=f"--psm {self.psm}")
+        text = pytesseract.image_to_string(
+            _img, lang=self.language, config=f"--psm {self.psm}"
+        )
         img.extra["text_content"] = text
         return super().process(text)
 

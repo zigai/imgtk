@@ -1,7 +1,7 @@
 from glob import glob
 
 from pypipeline.cli import PyPipelineCLI
-from stdl.fs import IMAGE_EXT, os, read_stdin, yield_files_in
+from stdl.fs import EXT, os, read_stdin, yield_files_in
 
 from imgtk.filters import FILTERS
 from imgtk.img import ImageItem
@@ -31,7 +31,7 @@ class imgtkCLI(PyPipelineCLI):
     name = "imgtk"
 
     def collect_items(self, items: list[str]) -> list[ImageItem]:
-        images = [ImageItem(i) for i in collect_files(items, IMAGE_EXT)]
+        images = [ImageItem(i) for i in collect_files(items, EXT.IMAGE)]
         self.log_info(f"found {len(images)} images")
         return images
 

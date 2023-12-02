@@ -18,7 +18,11 @@ class ImageItem(Item):
 
     def load(self):
         if self._data is None:
-            self._data = self.loader(self.path)
+            try:
+                self._data = self.loader(self.path)
+            except Exception as e:
+                self.discarded = True
+                self.unload()
 
     def unload(self):
         if self._data is not None:
