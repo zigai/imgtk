@@ -59,7 +59,9 @@ class Convert(ImageModifier):
         if mode == "GRAYSCALE":
             mode = "L"
         if not mode in self.MODES:
-            raise ValueError(f"Invalid mode: {mode}. Valid modes: {', '.join(self.MODES)}")
+            raise ValueError(
+                f"Invalid mode: {mode}. Valid modes: {', '.join(self.MODES)}"
+            )
         self.mode = mode
 
     def process(self, img: ImageItem) -> Item:
@@ -72,7 +74,6 @@ class Convert(ImageModifier):
 
 
 class Resize(ImageModifier):
-
     """
     Resize the image to the given size
 
@@ -225,7 +226,9 @@ class Scale(ImageModifier):
         self.y = y
 
     def process(self, img: ImageItem) -> Item:
-        img._data = img.data.resize((int(img.data.width * self.x), int(img.data.height * self.y)))
+        img._data = img.data.resize(
+            (int(img.data.width * self.x), int(img.data.height * self.y))
+        )
         return img
 
     @classmethod
@@ -314,7 +317,10 @@ class Flip(ImageModifier):
     """
 
     abbrev = "fl"
-    directions = {"horizontal": Image.FLIP_LEFT_RIGHT, "vertical": Image.FLIP_TOP_BOTTOM}
+    directions = {
+        "horizontal": Image.FLIP_LEFT_RIGHT,
+        "vertical": Image.FLIP_TOP_BOTTOM,
+    }
 
     def __init__(self, direction: str) -> None:
         super().__init__()

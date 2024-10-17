@@ -2,14 +2,14 @@ from typing import Callable
 
 from PIL import Image
 from pypipeline.item import Item
-from stdl.fs import assert_paths_exist
+from stdl.fs import ensure_paths_exist
 
 
 class ImageItem(Item):
     def __init__(self, path: str, loader: Callable = Image.open) -> None:
         super().__init__()
         self.path = path
-        assert_paths_exist(self.path)
+        ensure_paths_exist(self.path)
         self._data: Image.Image = None  # type:ignore
         self.loader = loader
 

@@ -1,7 +1,7 @@
 from glob import glob
 
 from pypipeline.cli import PyPipelineCLI
-from stdl.fs import EXT, os, read_stdin, yield_files_in
+from stdl.fs import EXT, os, yield_files_in
 
 from imgtk.filters import FILTERS
 from imgtk.img import ImageItem
@@ -9,9 +9,6 @@ from imgtk.modifiers import MODIFIERS
 
 
 def collect_files(items: list[str], ext=None, stdin=False):
-    # if stdin:
-    #    items.extend(read_stdin())
-
     for filepath in items:
         if os.path.isdir(filepath):
             for i in yield_files_in(filepath, ext):
