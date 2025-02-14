@@ -138,7 +138,7 @@ class Save(ImageModifier):
         return img
 
     def validate(self) -> None:
-        fs.assert_paths_exist(self.directory)
+        fs.ensure_paths_exist(self.directory)
 
 
 class Move(ImageModifier):
@@ -158,7 +158,7 @@ class Move(ImageModifier):
         return img
 
     def validate(self) -> None:
-        fs.assert_paths_exist(self.directory)
+        fs.ensure_paths_exist(self.directory)
 
 
 class Filter(ImageModifier):
